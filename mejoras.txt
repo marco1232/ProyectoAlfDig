@@ -1,0 +1,48 @@
+correcciones
+modificar
+1-dni como ususario
+2-no modificar usuario
+3-apellido maternos y paternos
+4-provinciua como box framework de pais peru ciudades
+5-domicilio 
+6-ditrito  como box
+7-validado por gmail
+8-celular 9 digitos 
+9-telefono 7 digitos
+10-primero punto indespensable
+11-qe seqa activado por defaul
+12-nombre de la institucion de estudio
+13 tiene un dispositivo tecnologicos
+14-cambiar fondo decetene color alfa
+
+registrar
+1-quitar nulo
+2-modificar campos
+
+
+pERFIL
+1-SUBIR IMAGEN
+2_DESCARGAR EXCEL HISTORIAL
+3-VIZUALIZAR  EL HISTORIAL
+BOTON DE RETROCEDER
+4-CUADRO TABLE Y BOTON IMPRIRMI PDF Y DESCARGAR EN EXCEL
+MODIFICAR PLANTILLA (CAMBIAR FONDO)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
