@@ -24,8 +24,78 @@ if ($_GET['perf'] == 'Beneficiario') {
     }
 }
 ?>
+<?php
+//action.php
+if(isset($_POST["action"]))
+{
+ $connect = mysqli_connect("localhost", "root", "", "testing");
+ if($_POST["action"] == "fetch")
+ {
+  $query = "SELECT * FROM tbl_images ORDER BY id DESC";
+  $result = mysqli_query($connect, $query);
+  $output = '
+   <table class="table table-bordered table-striped">  
+    <tr>
+     <th width="10%">ID</th>
+     <th width="70%">Image</th>
+     <th width="10%">Change</th>
+     <th width="10%">Remove</th>
+    </tr>
+  ';
+  while($row = mysqli_fetch_array($result))
+  {
+   $output .= '
+
+    <tr>
+     <td>'.$row["id"].'</td>
+     <td>
+      <img src="data:image/jpeg;base64,'.base64_encode($row['name'] ).'" height="60" width="75" class="img-thumbnail" />
+     </td>
+     <td><button type="button" name="update" class="btn btn-warning bt-xs update" id="'.$row["id"].'">Change</button></td>
+     <td><button type="button" name="delete" class="btn btn-danger bt-xs delete" id="'.$row["id"].'">Remove</button></td>
+    </tr>
+   ';
+  }
+  $output .= '</table>';
+  echo $output;
+ }
+
+ if($_POST["action"] == "insert")
+ {
+  $file = addslashes(file_get_contents($_FILES["image"]["tmp_name"]));
+  $query = "INSERT INTO tbl_images(name) VALUES ('$file')";
+  if(mysqli_query($connect, $query))
+  {
+   echo 'Image Inserted into Database';
+  }
+ }
+ if($_POST["action"] == "update")
+ {
+  $file = addslashes(file_get_contents($_FILES["image"]["tmp_name"]));
+  $query = "UPDATE tbl_images SET name = '$file' WHERE id = '".$_POST["image_id"]."'";
+  if(mysqli_query($connect, $query))
+  {
+   echo 'Image Updated into Database';
+  }
+ }
+ if($_POST["action"] == "delete")
+ {
+  $query = "DELETE FROM tbl_images WHERE id = '".$_POST["image_id"]."'";
+  if(mysqli_query($connect, $query))
+  {
+   echo 'Image Deleted from Database';
+  }
+ }
+}
+?>
+
+
 <html>
     <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script> 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />  
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
         <!--<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>-->
         <link href="../../vendor/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
@@ -38,6 +108,99 @@ if ($_GET['perf'] == 'Beneficiario') {
         <title>Modificar usuario</title>
         <link rel="icon" type="image/png" href="../../images/Alfabetizacion_Mano_Sin Resplandor.png">
         <link href="../../css/main1.css" rel="stylesheet" type="text/css"/>
+
+        <script>
+            $(document).ready(function () {
+
+                fetch_data();
+
+                function fetch_data()
+                {
+                    var action = "fetch";
+                    $.ajax({
+                        url: "action.php",
+                        method: "POST",
+                        data: {action: action},
+                        success: function (data)
+                        {
+                            $('#image_data').html(data);
+                        }
+                    })
+                }
+                $('#add').click(function () {
+                    $('#imageModal').modal('show');
+                    $('#image_form')[0].reset();
+                    $('.modal-title').text("Add Image");
+                    $('#image_id').val('');
+                    $('#action').val('insert');
+                    $('#insert').val("Insert");
+                });
+                $('#image_form').submit(function (event) {
+                    event.preventDefault();
+                    var image_name = $('#image').val();
+                    if (image_name == '')
+                    {
+                        alert("Please Select Image");
+                        return false;
+                    }
+                    else
+                    {
+                        var extension = $('#image').val().split('.').pop().toLowerCase();
+                        if (jQuery.inArray(extension, ['gif', 'png', 'jpg', 'jpeg']) == -1)
+                        {
+                            alert("Invalid Image File");
+                            $('#image').val('');
+                            return false;
+                        }
+                        else
+                        {
+                            $.ajax({
+                                url: "action.php",
+                                method: "POST",
+                                data: new FormData(this),
+                                contentType: false,
+                                processData: false,
+                                success: function (data)
+                                {
+                                    alert(data);
+                                    fetch_data();
+                                    $('#image_form')[0].reset();
+                                    $('#imageModal').modal('hide');
+                                }
+                            });
+                        }
+                    }
+                });
+                $(document).on('click', '.update', function () {
+                    $('#image_id').val($(this).attr("id"));
+                    $('#action').val("update");
+                    $('.modal-title').text("Update Image");
+                    $('#insert').val("Update");
+                    $('#imageModal').modal("show");
+                });
+                $(document).on('click', '.delete', function () {
+                    var image_id = $(this).attr("id");
+                    var action = "delete";
+                    if (confirm("Are you sure you want to remove this image from database?"))
+                    {
+                        $.ajax({
+                            url: "action.php",
+                            method: "POST",
+                            data: {image_id: image_id, action: action},
+                            success: function (data)
+                            {
+                                alert(data);
+                                fetch_data();
+                            }
+                        })
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
+            });
+        </script>
         <style type="text/css">
             body{
                 background-image:url(../../images/requerimiento.jpg);
@@ -301,31 +464,36 @@ if ($_GET['perf'] == 'Beneficiario') {
     ?>
 
 
- 
+
     <center>
-        <div class="container">
+        <div class="container" style="width:900px;">
             <div class="fb-profile">
                 <img align="left" class="fb-image-lg" src="../../imgperfil/portada.jpg" alt="Profile image example"/>
                 <img align="left" class="fb-image-profile thumbnail" src="../../imgperfil/perfil.png" alt="Profile image example"/>
                 <div class="fb-profile-text">
                     <input type="hidden" name="op">
                     <input type="hidden" name="ModificarUsuarioData">
-
                 </div>
-                
-                    <h1>   <?php echo $usuario['apellidos']; ?></h1>
-        
-        
-            <h1>    <?php echo $usuario['nombres']; ?></h1>
-        
+                <h1>   <?php echo $usuario['apellidos']; ?></h1>
+                <h1>    <?php echo $usuario['nombres']; ?></h1>
+            </div>
+            <br />
+            <div align="right">
+                <button type="button" name="add" id="add" class="btn btn-success">Add</button>
+            </div>
+            <br />
+            <div id="image_data">
 
             </div>
 
+        </div>
 
-        </div> 
+
+
+
     </center> 
     <br><br>
-    
+
     <div class="container" >
         <div class="">
             <h1 >Perfil:  <?php echo $usuario['perf']; ?></h1>
@@ -336,7 +504,7 @@ if ($_GET['perf'] == 'Beneficiario') {
         <div class="">
             <h1>Usuario de acceso:  <?php echo $usuario['usua']; ?></h1>
         </div>
-        
+
         <div class="">
             <h1 >Apellidos:   <?php echo $usuario['apellidos']; ?></h1>
         </div>
@@ -362,3 +530,28 @@ if ($_GET['perf'] == 'Beneficiario') {
     <script src="../../vendor/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 </body>
 </html>
+
+
+<div id="imageModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Image</h4>
+            </div>
+            <div class="modal-body">
+                <form id="image_form" method="post" enctype="multipart/form-data">
+                    <p><label>Select Image</label>
+                        <input type="file" name="image" id="image" /></p><br />
+                    <input type="hidden" name="action" id="action" value="insert" />
+                    <input type="hidden" name="image_id" id="image_id" />
+                    <input type="submit" name="insert" id="insert" value="Insert" class="btn btn-info" />
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
