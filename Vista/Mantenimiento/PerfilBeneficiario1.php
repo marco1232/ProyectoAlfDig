@@ -25,69 +25,27 @@ if ($_GET['perf'] == 'Beneficiario') {
 }
 ?>
 <?php
-//action.php
-if(isset($_POST["action"]))
-{
- $connect = mysqli_connect("localhost", "root", "", "testing");
- if($_POST["action"] == "fetch")
- {
-  $query = "SELECT * FROM tbl_images ORDER BY id DESC";
-  $result = mysqli_query($connect, $query);
-  $output = '
-   <table class="table table-bordered table-striped">  
-    <tr>
-     <th width="10%">ID</th>
-     <th width="70%">Image</th>
-     <th width="10%">Change</th>
-     <th width="10%">Remove</th>
-    </tr>
-  ';
-  while($row = mysqli_fetch_array($result))
-  {
-   $output .= '
+// Archivo de conexion con la base de datos
+require_once 'Conexion.php';
+// Condicional para validar el borrado de la imagen
+if (isset($_GET['delete_id'])) {
+    // Selecciona imagen a borrar
+    $stmt_select = $DB_con->prepare('SELECT Imagen_Img FROM tbl_imagenes WHERE Imagen_ID =:uid');
+    $stmt_select->execute(array(':uid' => $_GET['delete_id']));
+    $imgRow = $stmt_select->fetch(PDO::FETCH_ASSOC);
+    // Ruta de la imagen
+    unlink("../imagenes/" . $imgRow['Imagen_Img']);
 
-    <tr>
-     <td>'.$row["id"].'</td>
-     <td>
-      <img src="data:image/jpeg;base64,'.base64_encode($row['name'] ).'" height="60" width="75" class="img-thumbnail" />
-     </td>
-     <td><button type="button" name="update" class="btn btn-warning bt-xs update" id="'.$row["id"].'">Change</button></td>
-     <td><button type="button" name="delete" class="btn btn-danger bt-xs delete" id="'.$row["id"].'">Remove</button></td>
-    </tr>
-   ';
-  }
-  $output .= '</table>';
-  echo $output;
- }
-
- if($_POST["action"] == "insert")
- {
-  $file = addslashes(file_get_contents($_FILES["image"]["tmp_name"]));
-  $query = "INSERT INTO tbl_images(name) VALUES ('$file')";
-  if(mysqli_query($connect, $query))
-  {
-   echo 'Image Inserted into Database';
-  }
- }
- if($_POST["action"] == "update")
- {
-  $file = addslashes(file_get_contents($_FILES["image"]["tmp_name"]));
-  $query = "UPDATE tbl_images SET name = '$file' WHERE id = '".$_POST["image_id"]."'";
-  if(mysqli_query($connect, $query))
-  {
-   echo 'Image Updated into Database';
-  }
- }
- if($_POST["action"] == "delete")
- {
-  $query = "DELETE FROM tbl_images WHERE id = '".$_POST["image_id"]."'";
-  if(mysqli_query($connect, $query))
-  {
-   echo 'Image Deleted from Database';
-  }
- }
+    // Consulta para eliminar el registro de la base de datos
+    $stmt_delete = $DB_con->prepare('DELETE FROM tbl_imagenes WHERE Imagen_ID =:uid');
+    $stmt_delete->bindParam(':uid', $_GET['delete_id']);
+    $stmt_delete->execute();
+    // Redireccioa al inicio
+    header("Location: index.php");
 }
 ?>
+
+
 
 
 <html>
@@ -99,7 +57,7 @@ if(isset($_POST["action"]))
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
         <!--<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>-->
         <link href="../../vendor/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!--<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>-->
         <link href="../../css/perfil.css" rel="stylesheet" type="text/css"/>
 
         <!------ Include the above in your HEAD tag ---------->
@@ -467,9 +425,10 @@ if(isset($_POST["action"]))
 
     <center>
         <div class="container" style="width:900px;">
-            <div class="fb-profile">
+            <div class="fb-profile" >
                 <img align="left" class="fb-image-lg" src="../../imgperfil/portada.jpg" alt="Profile image example"/>
                 <img align="left" class="fb-image-profile thumbnail" src="../../imgperfil/perfil.png" alt="Profile image example"/>
+
                 <div class="fb-profile-text">
                     <input type="hidden" name="op">
                     <input type="hidden" name="ModificarUsuarioData">
@@ -477,21 +436,38 @@ if(isset($_POST["action"]))
                 <h1>   <?php echo $usuario['apellidos']; ?></h1>
                 <h1>    <?php echo $usuario['nombres']; ?></h1>
             </div>
-            <br />
-            <div align="right">
-                <button type="button" name="add" id="add" class="btn btn-success">Add</button>
+            <div class="container">
+                
+                <br />
+                <div class="row">
+                    <?php
+                    $stmt = $DB_con->prepare('SELECT Imagen_ID, Imagen_Marca, Imagen_Tipo, Imagen_Img FROM tbl_imagenes ORDER BY Imagen_ID DESC');
+                    $stmt->execute();
+
+                    if ($stmt->rowCount() > 0) {
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            extract($row);
+                            ?>
+                            <div class="col-xs-3">
+                                <p class="page-header"><?php echo $Imagen_Marca . "&nbsp;/&nbsp;" . $Imagen_Tipo; ?></p>
+                                <img src="../imagenes/<?php echo $row['Imagen_Img']; ?>" class="img-rounded" width="250px" height="250px" />
+                                <p class="page-header"> <span> <a class="btn btn-info" href="EditarImagen.php?edit_id=<?php echo $row['Imagen_ID']; ?>" title="click for edit" onclick="return confirm('Esta seguro de editar el archivo ?')"><span class="glyphicon glyphicon-edit"></span> Editar</a> <a class="btn btn-danger" href="?delete_id=<?php echo $row['Imagen_ID']; ?>" title="click for delete" onclick="return confirm('Esta seguro de eliminar el archivo?')"><span class="glyphicon glyphicon-remove-circle"></span> Borrar</a> </span> </p>
+                            </div>
+                            <?php
+                        }
+                    } else {
+                        ?>
+                        <div class="col-xs-12">
+                            <div class="alert alert-warning"> <span class="glyphicon glyphicon-info-sign"></span> &nbsp; Datos no encontrados ... </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
+                <br /><br />
             </div>
-            <br />
-            <div id="image_data">
+    </center>
 
-            </div>
-
-        </div>
-
-
-
-
-    </center> 
     <br><br>
 
     <div class="container" >
@@ -531,27 +507,3 @@ if(isset($_POST["action"]))
 </body>
 </html>
 
-
-<div id="imageModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Add Image</h4>
-            </div>
-            <div class="modal-body">
-                <form id="image_form" method="post" enctype="multipart/form-data">
-                    <p><label>Select Image</label>
-                        <input type="file" name="image" id="image" /></p><br />
-                    <input type="hidden" name="action" id="action" value="insert" />
-                    <input type="hidden" name="image_id" id="image_id" />
-                    <input type="submit" name="insert" id="insert" value="Insert" class="btn btn-info" />
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
