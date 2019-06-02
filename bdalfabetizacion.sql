@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.0
+-- version 4.8.3
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 24-04-2019 a las 23:47:02
--- Versión del servidor: 10.1.31-MariaDB
--- Versión de PHP: 7.2.4
+-- Servidor: 127.0.0.1:3306
+-- Tiempo de generación: 02-06-2019 a las 06:07:29
+-- Versión del servidor: 5.7.23
+-- Versión de PHP: 7.2.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -28,15 +28,18 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `beneficiario`
 --
 
-CREATE TABLE `beneficiario` (
-  `id_benefi` int(10) NOT NULL,
+DROP TABLE IF EXISTS `beneficiario`;
+CREATE TABLE IF NOT EXISTS `beneficiario` (
+  `id_benefi` int(10) NOT NULL AUTO_INCREMENT,
   `dniusu` char(8) DEFAULT NULL,
   `gradoinstrucion` set('UNIVERSIDAD','INSTITUTO','SECUNDARIO') DEFAULT NULL,
   `nominstitu` varchar(100) DEFAULT NULL,
   `especia` varchar(50) DEFAULT NULL,
   `usaordenador` set('Si','No') DEFAULT NULL,
-  `conociaprender` varchar(6) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `conociaprender` varchar(6) DEFAULT NULL,
+  PRIMARY KEY (`id_benefi`),
+  KEY `dnibenef_fk_1` (`dniusu`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `beneficiario`
@@ -53,8 +56,9 @@ INSERT INTO `beneficiario` (`id_benefi`, `dniusu`, `gradoinstrucion`, `nominstit
 -- Estructura de tabla para la tabla `colaborador`
 --
 
-CREATE TABLE `colaborador` (
-  `id_cola` int(10) NOT NULL,
+DROP TABLE IF EXISTS `colaborador`;
+CREATE TABLE IF NOT EXISTS `colaborador` (
+  `id_cola` int(10) NOT NULL AUTO_INCREMENT,
   `dniusu` char(8) DEFAULT NULL,
   `cip` varchar(10) DEFAULT NULL,
   `gradoacad` set('INGENIERO','GRADUADO','EGRESADO','ESTUDIANTE') DEFAULT NULL,
@@ -64,8 +68,10 @@ CREATE TABLE `colaborador` (
   `descripdocen` varchar(100) DEFAULT NULL,
   `nivelconoci` varchar(6) DEFAULT NULL,
   `aplicarpara` set('CAPACITADOR','ASISTENTE','APOYO') NOT NULL,
-  `privilegiodesubirmat` set('Si','No') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `privilegiodesubirmat` set('Si','No') NOT NULL,
+  PRIMARY KEY (`id_cola`),
+  KEY `dnicola_fk_1` (`dniusu`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `colaborador`
@@ -90,13 +96,16 @@ INSERT INTO `colaborador` (`id_cola`, `dniusu`, `cip`, `gradoacad`, `especia`, `
 -- Estructura de tabla para la tabla `materiales`
 --
 
-CREATE TABLE `materiales` (
-  `idmat` int(10) NOT NULL,
+DROP TABLE IF EXISTS `materiales`;
+CREATE TABLE IF NOT EXISTS `materiales` (
+  `idmat` int(10) NOT NULL AUTO_INCREMENT,
   `id_cola` int(10) DEFAULT NULL,
   `titulo` varchar(150) DEFAULT NULL,
   `descripcion` mediumtext,
-  `nommat` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `nommat` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`idmat`),
+  KEY `id_cola_fk_1` (`id_cola`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `materiales`
@@ -114,10 +123,26 @@ INSERT INTO `materiales` (`idmat`, `id_cola`, `titulo`, `descripcion`, `nommat`)
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tbl_imagenes`
+--
+
+DROP TABLE IF EXISTS `tbl_imagenes`;
+CREATE TABLE IF NOT EXISTS `tbl_imagenes` (
+  `imagen_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `imagen_Marca` varchar(200) CHARACTER SET ucs2 NOT NULL,
+  `imagen_Tipo` varchar(200) NOT NULL,
+  `imagen_Img` varchar(200) NOT NULL,
+  PRIMARY KEY (`imagen_ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='Tabla de Imagenes';
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuario`
 --
 
-CREATE TABLE `usuario` (
+DROP TABLE IF EXISTS `usuario`;
+CREATE TABLE IF NOT EXISTS `usuario` (
   `dniusu` char(8) NOT NULL,
   `usua` varchar(25) DEFAULT NULL,
   `pass` varchar(25) DEFAULT NULL,
@@ -142,7 +167,8 @@ CREATE TABLE `usuario` (
   `objetencasa` varchar(4) DEFAULT NULL,
   `enterarcampa` varchar(12) DEFAULT NULL,
   `disponibilidad` char(98) NOT NULL,
-  `estado` set('INACTIVO','ACTIVO','PENDIENTE') DEFAULT NULL
+  `estado` set('INACTIVO','ACTIVO','PENDIENTE') DEFAULT NULL,
+  PRIMARY KEY (`dniusu`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -164,59 +190,6 @@ INSERT INTO `usuario` (`dniusu`, `usua`, `pass`, `perf`, `apellidos`, `nombres`,
 ('87613772', 'ftra', '123', 'Apoyo', 'Tra Pito', 'Felix El', 'Lima', 'Lima', '1994-06-10', 'Chorrillos', 'Chorrillos', 'felix@hotmail.com', '988763272', '653261', '', '', '', '', '', '', 'No', '1100', '011100000001', '00111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000', 'PENDIENTE'),
 ('88617376', 'pcusi', '123', 'Capacitador', 'Cusi Ruiz', 'Piero', 'Lima', 'Lima', '1996-08-03', 'SLM', 'San Juan de Miraflores', 'cusi@hotmail.com', '', '', '', '', '', '', '', '', 'No', '1111', '000000000010', '00000000000000000000000000000000011111000000000000000000000000000000000000000000000000000000000000', 'PENDIENTE'),
 ('99999999', 'jmayta', '123', 'Asistente', 'Mayta Matienso', 'Jose Felipe', 'Lima', 'Lurin', '1992-11-22', 'KM40', 'Lurin', 'fepile@hotmail.com', '983938272', '7636378', '', '', '', '', '', '', 'No', '1111', '001000000001', '00000000000000000000111000000000000000000000000000000000000000000000000000000000000000000000000000', 'PENDIENTE');
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `beneficiario`
---
-ALTER TABLE `beneficiario`
-  ADD PRIMARY KEY (`id_benefi`),
-  ADD KEY `dnibenef_fk_1` (`dniusu`);
-
---
--- Indices de la tabla `colaborador`
---
-ALTER TABLE `colaborador`
-  ADD PRIMARY KEY (`id_cola`),
-  ADD KEY `dnicola_fk_1` (`dniusu`);
-
---
--- Indices de la tabla `materiales`
---
-ALTER TABLE `materiales`
-  ADD PRIMARY KEY (`idmat`),
-  ADD KEY `id_cola_fk_1` (`id_cola`);
-
---
--- Indices de la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`dniusu`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `beneficiario`
---
-ALTER TABLE `beneficiario`
-  MODIFY `id_benefi` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `colaborador`
---
-ALTER TABLE `colaborador`
-  MODIFY `id_cola` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT de la tabla `materiales`
---
-ALTER TABLE `materiales`
-  MODIFY `idmat` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restricciones para tablas volcadas
