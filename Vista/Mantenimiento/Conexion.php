@@ -1,14 +1,24 @@
 <?php
+class ConexionBD 
+{
+     const SERVER = "localhost";
+     const USER = "root";
+     const PASS = "";
+     const DATABASE = "bdalfabetizacion";
+     private $cn = null;
+     public function getConexionBD()
+     {  	
+         try
+         {
+            $this->cn = @mysql_connect(self::SERVER, self::USER, self::PASS);                
+            @mysql_select_db(self::DATABASE, $this->cn);
 
-$Localhost = 'localhost';
-$Usuario_BD = 'root';
-$Password_BD = '';
-$Nombre_BD = 'bdalfabetizacion';
+         }
+         catch(Exception $e)
+         {           	
 
-try{
-  $DB_con = new PDO("mysql:host={$Localhost};dbname={$Nombre_BD};charset=UTF8",$Usuario_BD,$Password_BD);
-  $DB_con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+         }
+        return $this->cn;
+    }      
 }
-catch(PDOException $e){
-  echo $e->getMessage();
-}
+?>

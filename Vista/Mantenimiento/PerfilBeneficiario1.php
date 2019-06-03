@@ -7,6 +7,11 @@ if ($_GET['perf'] != 'Beneficiario') {
 } else {
     $sql = "select * from usuario u inner join beneficiario b on u.dniusu='" . $_GET['dniusu'] . "' and u.dniusu=b.dniusu";
 }
+
+
+
+
+
 //echo $sql;
 $query = $db->execute($sql);
 $usuario;
@@ -23,28 +28,95 @@ if ($_GET['perf'] == 'Beneficiario') {
         $usuario = $datos;
     }
 }
+
+if (isset($_GET['edit_id']) && !empty($_GET['edit_id'])) {
+    $id = $_GET['edit_id'];
+    $stmt_edit = $DB_con->prepare('SELECT * FROM usuario ');
+
+    $stmt_edit->execute(array(':uid' => $id));
+    $edit_row = $stmt_edit->fetch(PDO::FETCH_ASSOC);
+    extract($edit_row);
+} 
+
+
+if (isset($_POST['btn_save_updates'])) {
+    $username = $_POST['user_name']; // user name
+    $userjob = $_POST['user_job']; // user email
+
+    $imgFile = $_FILES['user_image']['name'];
+    $tmp_dir = $_FILES['user_image']['tmp_name'];
+    $imgSize = $_FILES['user_image']['size'];
+
+    if ($imgFile) {
+        $upload_dir = '../imagenes/'; // upload directory	
+        $imgExt = strtolower(pathinfo($imgFile, PATHINFO_EXTENSION)); // get image extension
+        $valid_extensions = array('jpeg', 'jpg', 'png', 'gif'); // valid extensions
+        $userpic = rand(1000, 1000000) . "." . $imgExt;
+        if (in_array($imgExt, $valid_extensions)) {
+            if ($imgSize < 1000000) {
+                unlink($upload_dir . $edit_row['imagen_Img']);
+                move_uploaded_file($tmp_dir, $upload_dir . $userpic);
+            } else {
+                $errMSG = "Su archivo es demasiado grande mayor a 1MB";
+            }
+        } else {
+            $errMSG = "Solo archivos JPG, JPEG, PNG & GIF .";
+        }
+    } else {
+        // if no image selected the old image remain as it is.
+        $userpic = $edit_row['imagen_Img']; // old image from database
+    }
+
+
+    // if no error occured, continue ....
+    if (!isset($errMSG)) {
+        $stmt = $DB_con->prepare('UPDATE usuario 
+									 
+										 imagen_Img=:upic 
+								   WHERE dniusu=:uid');
+
+        $stmt->bindParam(':upic', $userpic);
+        $stmt->bindParam(':uid', $id);
+
+        if ($stmt->execute()) {
+            ?>
+            <script>
+                alert('Archivo editado correctamente ...');
+                window.location.href = 'PerfilBeneficiario1.php';
+            </script>
+            <?php
+        } else {
+            $errMSG = "Los datos no fueron actualizados !";
+        }
+    }
+}
 ?>
+
+
+
+
+
+
 <?php
 // Archivo de conexion con la base de datos
 require_once 'Conexion.php';
 // Condicional para validar el borrado de la imagen
 if (isset($_GET['delete_id'])) {
     // Selecciona imagen a borrar
-    $stmt_select = $DB_con->prepare('SELECT Imagen_Img FROM tbl_imagenes WHERE Imagen_ID =:uid');
-    $stmt_select->execute(array(':uid' => $_GET['delete_id']));
+    $stmt_select = $DB_con->prepare('SELECT imagen_Img FROM usario ');
+    $stmt_select->execute(array(':uid' => $_GET['imagen_Img']));
     $imgRow = $stmt_select->fetch(PDO::FETCH_ASSOC);
     // Ruta de la imagen
-    unlink("../imagenes/" . $imgRow['Imagen_Img']);
+    unlink("../imagenes/" . $imgRow['imagen_Img']);
 
     // Consulta para eliminar el registro de la base de datos
-    $stmt_delete = $DB_con->prepare('DELETE FROM tbl_imagenes WHERE Imagen_ID =:uid');
-    $stmt_delete->bindParam(':uid', $_GET['delete_id']);
+    $stmt_delete = $DB_con->prepare('DELETE FROM  imagen_Img WHERE usuario');
+    $stmt_delete->bindParam(':uid', $_GET['imagen_Img']);
     $stmt_delete->execute();
     // Redireccioa al inicio
-    header("Location: index.php");
+    header("Location: PerfilBeneficiario1.php");
 }
 ?>
-
 
 
 
@@ -67,98 +139,7 @@ if (isset($_GET['delete_id'])) {
         <link rel="icon" type="image/png" href="../../images/Alfabetizacion_Mano_Sin Resplandor.png">
         <link href="../../css/main1.css" rel="stylesheet" type="text/css"/>
 
-        <script>
-            $(document).ready(function () {
 
-                fetch_data();
-
-                function fetch_data()
-                {
-                    var action = "fetch";
-                    $.ajax({
-                        url: "action.php",
-                        method: "POST",
-                        data: {action: action},
-                        success: function (data)
-                        {
-                            $('#image_data').html(data);
-                        }
-                    })
-                }
-                $('#add').click(function () {
-                    $('#imageModal').modal('show');
-                    $('#image_form')[0].reset();
-                    $('.modal-title').text("Add Image");
-                    $('#image_id').val('');
-                    $('#action').val('insert');
-                    $('#insert').val("Insert");
-                });
-                $('#image_form').submit(function (event) {
-                    event.preventDefault();
-                    var image_name = $('#image').val();
-                    if (image_name == '')
-                    {
-                        alert("Please Select Image");
-                        return false;
-                    }
-                    else
-                    {
-                        var extension = $('#image').val().split('.').pop().toLowerCase();
-                        if (jQuery.inArray(extension, ['gif', 'png', 'jpg', 'jpeg']) == -1)
-                        {
-                            alert("Invalid Image File");
-                            $('#image').val('');
-                            return false;
-                        }
-                        else
-                        {
-                            $.ajax({
-                                url: "action.php",
-                                method: "POST",
-                                data: new FormData(this),
-                                contentType: false,
-                                processData: false,
-                                success: function (data)
-                                {
-                                    alert(data);
-                                    fetch_data();
-                                    $('#image_form')[0].reset();
-                                    $('#imageModal').modal('hide');
-                                }
-                            });
-                        }
-                    }
-                });
-                $(document).on('click', '.update', function () {
-                    $('#image_id').val($(this).attr("id"));
-                    $('#action').val("update");
-                    $('.modal-title').text("Update Image");
-                    $('#insert').val("Update");
-                    $('#imageModal').modal("show");
-                });
-                $(document).on('click', '.delete', function () {
-                    var image_id = $(this).attr("id");
-                    var action = "delete";
-                    if (confirm("Are you sure you want to remove this image from database?"))
-                    {
-                        $.ajax({
-                            url: "action.php",
-                            method: "POST",
-                            data: {image_id: image_id, action: action},
-                            success: function (data)
-                            {
-                                alert(data);
-                                fetch_data();
-                            }
-                        })
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                });
-            });
-        </script>
         <style type="text/css">
             body{
                 background-image:url(../../images/requerimiento.jpg);
@@ -269,25 +250,25 @@ if (isset($_GET['delete_id'])) {
 
         </style>
         <script>
-            function validate(evt, msg) {
-                var theEvent = evt || window.event;
+    function validate(evt, msg) {
+        var theEvent = evt || window.event;
 
-                // Handle paste
-                if (theEvent.type === 'paste') {
-                    key = event.clipboardData.getData('text/plain');
-                } else {
-                    // Handle key press
-                    var key = theEvent.keyCode || theEvent.which;
-                    key = String.fromCharCode(key);
-                }
-                var regex = /[0-9]|\./;
-                if (!regex.test(key)) {
-                    theEvent.returnValue = false;
-                    if (theEvent.preventDefault)
-                        theEvent.preventDefault();
-                    alert(msg);
-                }
-            }
+        // Handle paste
+        if (theEvent.type === 'paste') {
+            key = event.clipboardData.getData('text/plain');
+        } else {
+            // Handle key press
+            var key = theEvent.keyCode || theEvent.which;
+            key = String.fromCharCode(key);
+        }
+        var regex = /[0-9]|\./;
+        if (!regex.test(key)) {
+            theEvent.returnValue = false;
+            if (theEvent.preventDefault)
+                theEvent.preventDefault();
+            alert(msg);
+        }
+    }
         </script>
         <script>
             function mostrarPass() {
@@ -304,10 +285,10 @@ if (isset($_GET['delete_id'])) {
             function enviar(op) {
 
                 document.form.action = "../../Controlador/AdministradorControlador.php";
-//                document.form.method = "GET";
+                //                document.form.method = "GET";
                 document.form.method = "POST";
                 document.form.op.value = op;
-//                document.form.ModificarUsuarioData.value = encoded;
+                //                document.form.ModificarUsuarioData.value = encoded;
                 document.form.submit();
             }
         </script>
@@ -426,46 +407,34 @@ if (isset($_GET['delete_id'])) {
     <center>
         <div class="container" style="width:900px;">
             <div class="fb-profile" >
+                <?php ?>
                 <img align="left" class="fb-image-lg" src="../../imgperfil/portada.jpg" alt="Profile image example"/>
-                <img align="left" class="fb-image-profile thumbnail" src="../../imgperfil/perfil.png" alt="Profile image example"/>
+                <img align="left" class="fb-image-profile thumbnail" src="../imagenes/<?php echo $usuario['imagen_Img']; ?>" alt="Profile image example"/>
+                <h1>   <?php echo $usuario['apellidos']; ?></h1>                      
+                <h1>   <?php echo $usuario['nombres']; ?></h1>
 
-                <div class="fb-profile-text">
-                    <input type="hidden" name="op">
-                    <input type="hidden" name="ModificarUsuarioData">
-                </div>
-                <h1>   <?php echo $usuario['apellidos']; ?></h1>
-                <h1>    <?php echo $usuario['nombres']; ?></h1>
-            </div>
-            <div class="container">
-                
-                <br />
-                <div class="row">
-                    <?php
-                    $stmt = $DB_con->prepare('SELECT Imagen_ID, Imagen_Marca, Imagen_Tipo, Imagen_Img FROM tbl_imagenes ORDER BY Imagen_ID DESC');
-                    $stmt->execute();
-
-                    if ($stmt->rowCount() > 0) {
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            extract($row);
-                            ?>
-                            <div class="col-xs-3">
-                                <p class="page-header"><?php echo $Imagen_Marca . "&nbsp;/&nbsp;" . $Imagen_Tipo; ?></p>
-                                <img src="../imagenes/<?php echo $row['Imagen_Img']; ?>" class="img-rounded" width="250px" height="250px" />
-                                <p class="page-header"> <span> <a class="btn btn-info" href="EditarImagen.php?edit_id=<?php echo $row['Imagen_ID']; ?>" title="click for edit" onclick="return confirm('Esta seguro de editar el archivo ?')"><span class="glyphicon glyphicon-edit"></span> Editar</a> <a class="btn btn-danger" href="?delete_id=<?php echo $row['Imagen_ID']; ?>" title="click for delete" onclick="return confirm('Esta seguro de eliminar el archivo?')"><span class="glyphicon glyphicon-remove-circle"></span> Borrar</a> </span> </p>
-                            </div>
-                            <?php
-                        }
-                    } else {
-                        ?>
-                        <div class="col-xs-12">
-                            <div class="alert alert-warning"> <span class="glyphicon glyphicon-info-sign"></span> &nbsp; Datos no encontrados ... </div>
-                        </div>
-                        <?php
-                    }
+                <?php {
                     ?>
-                </div>
-                <br /><br />
+                    <div class="col-xs-12">
+                        <div class="alert alert-warning"> <span class="glyphicon glyphicon-info-sign"></span> &nbsp; Datos no encontrados ... </div>
+                    </div>
+                    <?php
+                }
+                ?>
+
+
             </div>
+            <table>
+                <tr>
+                <input class="input-group" type="file" name="user_image" accept="image/*" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="submit" name="btn_save_updates" class="btn btn-default"> <span class="glyphicon glyphicon-save"></span> Actualizar </button>
+
+                </tr>
+            </table>
+
+
     </center>
 
     <br><br>
