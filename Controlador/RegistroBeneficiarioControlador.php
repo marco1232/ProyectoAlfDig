@@ -1,6 +1,6 @@
 <?php 
     session_start();
-//    echo "<script>alert('".$_POST['txtDni']."')</script>";
+    echo "<script>alert('".$_POST['txtDni']."')</script>";
     $dniusu=$_POST['dniusu'];
     
     $nombres=$_POST['nombres'];
@@ -200,24 +200,24 @@
                 include './MailerControlador.php';
                 
                 print "<script>window.location='../Login.php';</script>";
-//                while ($row = mysqli_fetch_assoc($result)) {
-//                    $fila = $row;
-//                }
-//                if ($fila == null) {
-//                    print "<script>alert(\"Acceso invalido.\");window.location='../Login.php';</script>";
-//                } else {
-//                    if (!isset($_SESSION)) {
-//                        session_start();
-//                    }
-//                    $_SESSION['datos'] = $fila;
-//                    if ($_SESSION['datos']['perf'] == 'Beneficiario') {
-//                        print "<script>window.location='../Vista/Participante/FrmPrincipalPartic.php';</script>";
-//                    } else if ($_SESSION['datos']['perf'] == 'Capacitador') {
-//                        print "<script>window.location='../Vista/Capacitador/FrmPrincipalCapaci.php';</script>";
-//                    } else if ($_SESSION['datos']['perf'] == 'Administrador') {
-//                        print "<script>window.location='../Vista/Administrador/FrmPrincipalAdmin.php';</script>";
-//                    }
-//                }
+                while ($row = mysqli_fetch_assoc($result)) {
+                  $fila = $row;
+               }
+              if ($fila == null) {
+                   print "<script>alert(\"Acceso invalido.\");window.location='../Login.php';</script>";
+               } else {
+                   if (!isset($_SESSION)) {
+                       session_start();
+                   }
+                  $_SESSION['datos'] = $fila;
+                   if ($_SESSION['datos']['perf'] == 'Beneficiario') {
+                       print "<script>window.location='../Vista/Participante/FrmPrincipalPartic.php';</script>";
+                    } else if ($_SESSION['datos']['perf'] == 'Capacitador') {
+                     print "<script>window.location='../Vista/Capacitador/FrmPrincipalCapaci.php';</script>";
+                    } else if ($_SESSION['datos']['perf'] == 'Administrador') {
+                       print "<script>window.location='../Vista/Administrador/FrmPrincipalAdmin.php';</script>";
+                   }
+               }
 //            }
 //        }
 //    }
