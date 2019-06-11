@@ -26,15 +26,15 @@
             }
         </script>
         <script>
-            function classActive(){
-                var adm=document.getElementById('liadministracion');
-                var mat=document.getElementById('limateriales');
-                var rep=document.getElementById('lireportes');
-                var prin=document.getElementById('liaccionesprincipales');
-                adm.className='';
-                mat.className='active';
-                rep.className='';
-                prin.className='';
+            function classActive() {
+                var adm = document.getElementById('liadministracion');
+                var mat = document.getElementById('limateriales');
+                var rep = document.getElementById('lireportes');
+                var prin = document.getElementById('liaccionesprincipales');
+                adm.className = '';
+                mat.className = 'active';
+                rep.className = '';
+                prin.className = '';
             }
         </script>
     </head>
@@ -43,7 +43,7 @@
         <form name="form">
 
             <div class="wrapper col5">
-                
+
                 <input type="hidden" name="op">
                 <div id="container" >
 
@@ -73,6 +73,8 @@
                     </style>
                     <CENTER>
                         <div style="width:1000px">
+                            
+                        
                             <?php
                             include '../../Util/config.inc.php';
                             $db = new Conect_MySql();
@@ -102,7 +104,7 @@
                                     <td>Estado</td>
                                     <td>Modificar</td>
                                     <td>Perfil</td>
-                                    
+
 
                                 </tr>
                                 <?php foreach ($usuarios as $filas) { ?>
@@ -126,16 +128,16 @@
                                     <td><button type="button" onclick="window.location.href = '../Mantenimiento/PerfilBeneficiario1.php?dniusu=<?php echo $filas['dniusu']; ?>&perf=<?php echo $filas['perf']; ?>'">Perfil</button></td>
                                     <!--<td><button type="button" onclick="window.location.href = 'javascript:ajax('AjaxControlador','6');javascript:classActive()'">ver</button></td>-->
 
-                                    
-<?php } ?>
+
+                                <?php } ?>
                             </table>
-                            
+                        </div>
                     </center>
 
                 </div>
             </div>
         </form>
-        
+
     </body>
 </html>
 
