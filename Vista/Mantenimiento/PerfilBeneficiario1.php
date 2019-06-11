@@ -53,7 +53,7 @@ if ($_GET['perf'] == 'Beneficiario') {
 
         <style type="text/css">
             body{
-                background-image:url(../../images/requerimiento.jpg);
+                background-image:url();
                 background-position: center center;
                 background-size: cover;
                 background-repeat: no-repeat;
@@ -155,6 +155,12 @@ if ($_GET['perf'] == 'Beneficiario') {
             }
             .form-style-1 .required{
                 color:red;
+            }
+            .item-box-blog {
+                border: 1px solid #dadada;
+                text-align: center;
+                z-index: 4;
+                padding: 20px;
             }
 
 
@@ -313,73 +319,82 @@ if ($_GET['perf'] == 'Beneficiario') {
     }
     ?>
 
+    <?php
+    $db = new Conect_MySql();
+    $sql = "select u.dniusu,u.usua,u.pass,u.perf,u.apellidos,u.nombres,u.estado,u.img_perf,b.id_benefi from usuario u inner join beneficiario b on u.dniusu=b.dniusu order by b.id_benefi";
+    $query = $db->execute($sql);
+    $usuarios = array();
+    while ($datos = $db->fetch_row($query)) {
+        $id = $datos['id_benefi'];
+        //$title_id = $row['title_id'];
+        $usuarios[$id] = $datos;
+    }
+    $_SESSION['imc_beneficiarios'] = $usuarios;
+    ?>
+    <div class="container" style="width:900px;">
+        <div class="fb-profile" >
+            <img align="left" class="fb-image-lg" src="../../imgperfil/portada.jpg" alt="Profile image example"/>
+            <img align="left" class="fb-image-profile thumbnail" src="../../imagenes/<?php echo $usuario['img_perf']; ?>" alt="Profile image example"/>
+            <h1>   <?php echo $usuario['apellidos']; ?></h1>                      
+            <h1>   <?php echo $usuario['nombres']; ?></h1>
+        </div>
+        <table>
+            <tr>
+            <input class="input-group" type="file" name="user_image" accept="image/*" /></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit" name="btn_save_updates" class="btn btn-default"> <span class="glyphicon glyphicon-save"></span> Actualizar </button>
+            </tr>
+        </table>
+        <table>
+            <div class="row  item-box-blog ">
+                <div class="col">
+                    <div class="">
+                        <h1 >Perfil:  <?php echo $usuario['img_perf']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 >Perfil:  <?php echo $usuario['perf']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 class="">DNI:  <?php echo $usuario['dniusu']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1>Usuario de acceso:  <?php echo $usuario['usua']; ?></h1>
+                    </div>
 
-
-    <center>
-        <div class="container" style="width:900px;">
-
-
-            <div class="fb-profile" >
-
-
-                <img align="left" class="fb-image-lg" src="../../imgperfil/portada.jpg" alt="Profile image example"/>
-                <img align="left" class="fb-image-profile thumbnail" src="../imagenes/<?php echo $usuario['imagen_Img']; ?>" alt="Profile image example"/>
-                <h1>   <?php echo $usuario['apellidos']; ?></h1>                      
-                <h1>   <?php echo $usuario['nombres']; ?></h1>
-
-
-
+                    <div class="">
+                        <h1 >Apellidos:   <?php echo $usuario['apellidos']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 >Nombres:    <?php echo $usuario['nombres']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 >Provincia de nacimiento:   <?php echo $usuario['provnaci']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 >Distrito de nacimiento:  <?php echo $usuario['distnaci']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 >Fecha de nacimiento:   <?php echo $usuario['fecnaci']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 >Domicilio actual:   <?php echo $usuario['domiact']; ?></h1>
+                    </div>
+                    <div class="">
+                        <h1 >Distrito actuall:   <?php echo $usuario['distact']; ?></h1>
+                    </div>
+                </div>
+                <div class="col row  item-box-blog ">
+                    <h5>Historial de Usuarion</h5>
+                </div>
             </div>
-            <table>
-                <tr>
-                <input class="input-group" type="file" name="user_image" accept="image/*" /></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button type="submit" name="btn_save_updates" class="btn btn-default"> <span class="glyphicon glyphicon-save"></span> Actualizar </button>
-
-                </tr>
-            </table>
-        </div>
-    </center>
-
-    <br><br>
-
-    <div class="container" >
-        <div class="">
-            <h1 >Perfil:  <?php echo $usuario['perf']; ?></h1>
-        </div>
-        <div class="">
-            <h1 class="">DNI:  <?php echo $usuario['dniusu']; ?></h1>
-        </div>
-        <div class="">
-            <h1>Usuario de acceso:  <?php echo $usuario['usua']; ?></h1>
-        </div>
-
-        <div class="">
-            <h1 >Apellidos:   <?php echo $usuario['apellidos']; ?></h1>
-        </div>
-        <div class="">
-            <h1 >Nombres:    <?php echo $usuario['nombres']; ?></h1>
-        </div>
-        <div class="">
-            <h1 >Provincia de nacimiento:   <?php echo $usuario['provnaci']; ?></h1>
-        </div>
-        <div class="">
-            <h1 >Distrito de nacimiento:  <?php echo $usuario['distnaci']; ?></h1>
-        </div>
-        <div class="">
-            <h1 >Fecha de nacimiento:   <?php echo $usuario['fecnaci']; ?></h1>
-        </div>
-        <div class="">
-            <h1 >Domicilio actual:   <?php echo $usuario['domiact']; ?></h1>
-        </div>
-        <div class="">
-            <h1 >Distrito actuall:   <?php echo $usuario['distact']; ?></h1>
-        </div>
+        </table>
     </div>
-    
-    
-    
+
+
+
+
+
 
     <script src="../../vendor/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 </body>

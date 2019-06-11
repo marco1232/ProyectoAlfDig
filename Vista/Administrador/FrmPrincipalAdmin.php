@@ -181,14 +181,8 @@
                             <h1>Historial de usuario Colaboradores</h1></a>
                             
                         </div>
-                            
-                        
-                        
-                        
-
-                        
                     </div>
-                </div>
+                
                 <div class="container">
 
                     <!-- Portfolio Item Heading -->
@@ -225,7 +219,7 @@
 
 
             </div>
-
+            </div>
         </div>
     </form>
     <div class="wrapper col7" >
