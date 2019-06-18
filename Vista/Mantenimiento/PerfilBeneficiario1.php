@@ -2,11 +2,39 @@
 <?php
 include '../../Util/config.inc.php';
 $db = new Conect_MySql();
+if ($_GET['perf'] != 'historia') {
+    $sql = "select * from usuario u inner join historia c on u.dniusu='" . $_GET['dniusu'] . "' and u.dniusu=c.dniusu";
+} else {
+    $sql = "select * from usuario u inner join historia b on u.dniusu='" . $_GET['dniusu'] . "' and u.dniusu=b.dniusu";
+}
+
+
+$query = $db->execute($sql);
+$usuario1;
+if ($_GET['perf'] == 'historia') {
+    while ($datos = $db->fetch_row($query)) {
+        //$id = $datos['id_benefi'];
+        //$title_id = $row['title_id'];
+        $usuario1 = $datos;
+    }
+} else {
+    while ($datos = $db->fetch_row($query)) {
+        //$id = $datos['id_cola'];
+        //$title_id = $row['title_id'];
+        $usuario1 = $datos;
+    }
+}
+?>
+<?php
 if ($_GET['perf'] != 'Beneficiario') {
     $sql = "select * from usuario u inner join colaborador c on u.dniusu='" . $_GET['dniusu'] . "' and u.dniusu=c.dniusu";
 } else {
     $sql = "select * from usuario u inner join beneficiario b on u.dniusu='" . $_GET['dniusu'] . "' and u.dniusu=b.dniusu";
 }
+
+
+
+
 //echo $sql;
 $query = $db->execute($sql);
 $usuario;
@@ -24,8 +52,6 @@ if ($_GET['perf'] == 'Beneficiario') {
     }
 }
 ?>
-
-
 
 
 
@@ -161,6 +187,106 @@ if ($_GET['perf'] == 'Beneficiario') {
                 text-align: center;
                 z-index: 4;
                 padding: 20px;
+            }
+
+
+
+
+            .rtable,
+            .rtable--flip tbody {
+                -webkit-overflow-scrolling: touch;
+                background: radial-gradient(left, ellipse, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 75%) 0 center, radial-gradient(right, ellipse, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 75%) 100% center;
+                background-size: 10px 100%, 10px 100%;
+                background-attachment: scroll, scroll;
+                background-repeat: no-repeat;
+            }
+
+            .rtable td:first-child,
+            .rtable--flip tbody tr:first-child {
+                background-image: -webkit-gradient(linear, left top, right top, color-stop(50%, white), to(rgba(255, 255, 255, 0)));
+                background-image: linear-gradient(to right, white 50%, rgba(255, 255, 255, 0) 100%);
+                background-repeat: no-repeat;
+                background-size: 20px 100%;
+            }
+
+            .rtable td:last-child,
+            .rtable--flip tbody tr:last-child {
+                background-image: -webkit-gradient(linear, right top, left top, color-stop(50%, white), to(rgba(255, 255, 255, 0)));
+                background-image: linear-gradient(to left, white 50%, rgba(255, 255, 255, 0) 100%);
+                background-repeat: no-repeat;
+                background-position: 100% 0;
+                background-size: 20px 100%;
+            }
+
+            .rtable th {
+                font-size: 11px;
+                text-align: left;
+                text-transform: uppercase;
+                background: #f2f0e6;
+            }
+
+            .rtable th,
+            .rtable td {
+                padding: 6px 12px;
+                border: 1px solid #d9d7ce;
+            }
+
+            .rtable--flip {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                overflow: hidden;
+                background: none;
+            }
+
+            .rtable--flip thead {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -ms-flex-negative: 0;
+                flex-shrink: 0;
+                min-width: -webkit-min-content;
+                min-width: -moz-min-content;
+                min-width: min-content;
+            }
+
+            .rtable--flip tbody {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                position: relative;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .rtable--flip tr {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                min-width: -webkit-min-content;
+                min-width: -moz-min-content;
+                min-width: min-content;
+                -ms-flex-negative: 0;
+                flex-shrink: 0;
+            }
+
+            .rtable--flip td,
+            .rtable--flip th {
+                display: block;
+            }
+
+            .rtable--flip td {
+                background-image: none !important;
+                border-left: 0;
+            }
+
+            .rtable--flip th:not(:last-child),
+            .rtable--flip td:not(:last-child) {
+                border-bottom: 0;
             }
 
 
@@ -305,97 +431,143 @@ if ($_GET['perf'] == 'Beneficiario') {
             }
         </script>
     </head>
-    <?php
-    if (!isset($usuario['cip'])) {
-        echo '<body onload="disableperfbox()">';
-    } else {
-        ?>    
-        <?php
-        if (($usuario['cip']) == null) {
-            echo '<body onload="disableperfbox();disableCIPradiobutton();disableCiclo()">';
-        } else {
-            echo '<body onload="disableperfbox();enableCIPradiobutton(' . $usuario['cip'] . ');disableCiclo()">';
-        }
-    }
-    ?>
 
-    <?php
-    $db = new Conect_MySql();
-    $sql = "select u.dniusu,u.usua,u.pass,u.perf,u.apellidos,u.nombres,u.estado,u.img_perf,b.id_benefi from usuario u inner join beneficiario b on u.dniusu=b.dniusu order by b.id_benefi";
-    $query = $db->execute($sql);
-    $usuarios = array();
-    while ($datos = $db->fetch_row($query)) {
-        $id = $datos['id_benefi'];
-        //$title_id = $row['title_id'];
-        $usuarios[$id] = $datos;
-    }
-    $_SESSION['imc_beneficiarios'] = $usuarios;
-    ?>
+
     <div class="container" style="width:900px;">
         <div class="fb-profile" >
             <img align="left" class="fb-image-lg" src="../../imgperfil/portada.jpg" alt="Profile image example"/>
             <img align="left" class="fb-image-profile thumbnail" src="../../imagenes/<?php echo $usuario['img_perf']; ?>" alt="Profile image example"/>
             <h1>   <?php echo $usuario['apellidos']; ?></h1>                      
             <h1>   <?php echo $usuario['nombres']; ?></h1>
-        </div>
-        <table>
-            <tr>
+
             <input class="input-group" type="file" name="user_image" accept="image/*" /></td>
-            </tr>
-            <tr>
-                <td colspan="2"><button type="submit" name="btn_save_updates" class="btn btn-default"> <span class="glyphicon glyphicon-save"></span> Actualizar </button>
-            </tr>
-        </table>
-        <table>
-            <div class="row  item-box-blog ">
-                <div class="col">
-                    <div class="">
-                        <h1 >Perfil:  <?php echo $usuario['img_perf']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 >Perfil:  <?php echo $usuario['perf']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 class="">DNI:  <?php echo $usuario['dniusu']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1>Usuario de acceso:  <?php echo $usuario['usua']; ?></h1>
-                    </div>
 
-                    <div class="">
-                        <h1 >Apellidos:   <?php echo $usuario['apellidos']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 >Nombres:    <?php echo $usuario['nombres']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 >Provincia de nacimiento:   <?php echo $usuario['provnaci']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 >Distrito de nacimiento:  <?php echo $usuario['distnaci']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 >Fecha de nacimiento:   <?php echo $usuario['fecnaci']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 >Domicilio actual:   <?php echo $usuario['domiact']; ?></h1>
-                    </div>
-                    <div class="">
-                        <h1 >Distrito actuall:   <?php echo $usuario['distact']; ?></h1>
-                    </div>
-                </div>
-                <div class="col row  item-box-blog ">
-                    <h5>Historial de Usuarion</h5>
-                </div>
+        </div>
+
+
+        <div class="row  item-box-blog ">
+
+            <div class="col   item-box-blog ">
+                <h5>Informacion Basica</h5>
+                <br>
+
+                <center>
+                    <table class="rtable">
+                        <thead>
+                            <tr>
+                                <th>Perfil</th>
+                                <th><?php echo $usuario['perf']; ?></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>DNI</td>
+                                <td><?php echo $usuario['dniusu']; ?></td>
+
+                            </tr>
+                            <tr>
+                                <td>Usuario de acceso</td>
+                                <td><?php echo $usuario['usua']; ?></td>
+
+                            </tr>
+                            <tr>
+                                <td>Apellidos</td>
+                                <td><?php echo $usuario['apellidos']; ?></td>
+
+                            </tr>
+                            <tr>
+                                <td>Provincia de nacimiento</td>
+                                <td><?php echo $usuario['provnaci']; ?></td>
+
+                            </tr>
+                            <tr>
+                                <td>Distrito de nacimiento</td>
+                                <td><?php echo $usuario['distnaci']; ?></td>
+
+                            </tr>
+                            <tr>
+                                <td>Fecha de nacimiento</td>
+                                <td> <?php echo $usuario['fecnaci']; ?></td>
+
+                            </tr>
+                            <tr>
+                                <td>Domicilio actual</td>
+                                <td> <?php echo $usuario['domiact']; ?></td>
+
+                            </tr>
+                            <tr>
+                                <td>Distrito actual</td>
+                                <td><?php echo $usuario['distact']; ?></td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </center>
             </div>
-        </table>
+            <div class="col   item-box-blog ">
+                <h5>Historial de Usuario</h5>
+                <br><br>
+                <center>
+                    <table class="rtable">
+                        <thead>
+                            <tr>
+                                <th>participaciones</th>
+                                <th>fecha</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><?php echo $usuario1['fechpar']; ?></td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </center>
+
+
+            </div>
+
+        </div>
+<!--        <div class="container">
+            <div class="page-header">
+                <h1 class="h3">Agregar nueva imágen. <a class="btn btn-default" href="PerfilBeneficiario1.php"> <span class="glyphicon glyphicon-eye-open"></span> &nbsp; Mostrar todo </a></h1>
+            </div>
+            <?php
+            if (isset($successMSG)) {
+                ?>
+                <div class="alert alert-success"> <strong><span class="glyphicon glyphicon-info-sign"></span> <?php echo $successMSG; ?></strong> </div>
+                <?php
+            }
+            ?>
+            <form method="post" enctype="multipart/form-data" class="form-horizontal">
+                <table class="table table-bordered table-responsive">
+
+                    <tr>
+                        <td><label class="control-label">Imágen.</label></td>
+                        <td><input class="input-group" type="file" name="user_image" accept="image/*" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><button type="submit" name="btnsave" class="btn btn-default"> <span class="glyphicon glyphicon-save"></span> &nbsp; Guardar Imagen </button></td>
+                    </tr>
+                </table>
+                <center>
+                    <button type="button" onclick="document.getElementById('perf').disabled = false;enviar('3')">Grabar</button>
+                </center>
+            </form>
+            <div class="alert alert-info"> <strong>Tutorial Vinculo!</strong> <a href="https://baulcode.com">Ir al Tutorial</a>! </div>
+        </div>-->
+
+
+        <div class="row  item-box-blog">
+            <input type="button" onclick="window.location.href = '../Administrador/FrmPrincipalAdmin.php'" value="Volver" />
+            <p class="fl_left">   Copyright &copy; 2018 - Derechos reservados - <a href="HTTP://alfabetizaciondigital.info" target="_BLANK">alfabetizaciondigital.info</a></p>
+
+            <br class="clear" />
+        </div>
     </div>
-
-
-
-
-
-
     <script src="../../vendor/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 </body>
 </html>

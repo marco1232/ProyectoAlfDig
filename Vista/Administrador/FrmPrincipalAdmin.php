@@ -150,75 +150,69 @@
                         </div>
                         <div class="col-md-3 col-sm-6 mb-4">
                             <a href="#">
-                                <img class="img-fluid" src="../../images/icons/reporte.png" onclick = " document.getElementById ('repben'). click () "alt="">
+                                <img class="img-fluid" src="../../images/icons/reporte.png" onclick = " document.getElementById('repben').click()"alt="">
                                 <h1>Ver todo sobre los beneficiarios</h1>
                             </a>
                         </div>
 
                         <div class="col-md-3 col-sm-6 mb-4">
                             <a href="#">
-                                <img class="img-fluid" src="../../images/icons/reporte.png" onclick = " document.getElementById ('repcol'). click () " alt="">
+                                <img class="img-fluid" src="../../images/icons/reporte.png" onclick = " document.getElementById('repcol').click()" alt="">
                                 <h1>Ver todo sobre los colaboradores</h1></a>
                         </div>
                         <br><br><br>
-                        
+
                         <div class="col-md-12 col-sm-12 mb-12">
                             <a href="#">
-                            <img class="img-fluid" src="../../images/icons/materiales.png" onclick = " document.getElementById ('adminMat'). click () " alt="">
-                            <h1>Materiales</h1></a>
-                            
+                                <img class="img-fluid" src="../../images/icons/materiales.png" onclick = " document.getElementById('adminMat').click()" alt="">
+                                <h1>Materiales</h1></a>
+
                         </div>
-                        
-                            <div class="col-md-6 col-sm-6 mb-6">
+
+                        <div class="col-md-6 col-sm-6 mb-6">
                             <a href="#">
                                 <img class="img-fluid" src="../../images/icons/historia.png" onclick="document.getElementById('histBene').click()" alt="">
-                            <h1>Historial de usuario Beneficiador</h1></a>
-                            
+                                <h1>Historial de usuario Beneficiador</h1></a>
+
                         </div>
                         <div class="col-md-6 col-sm-6 mb-6">
                             <a href="#">
                                 <img class="img-fluid" src="../../images/icons/historia.png" onclick="document.getElementById('histColo').click()" alt="">
-                            <h1>Historial de usuario Colaboradores</h1></a>
-                            
+                                <h1>Historial de usuario Colaboradores</h1></a>
+
                         </div>
                     </div>
-                
-                <div class="container">
 
-                    <!-- Portfolio Item Heading -->
-                    <h1 class="my-4">Alfabetizacion Digital
-                        <small>Aula Virtual</small>
-                    </h1>
+                    <div class="container">
 
-                    <!-- Portfolio Item Row -->
-                    <div class="row">
+                        <!-- Portfolio Item Heading -->
+                        <h1 class="my-4">Alfabetizacion Digital
+                            <small>Aula Virtual</small>
+                        </h1>
 
-                        <div class="col-md-8">
-                            <img class="img-fluid" src="../../images/requerimientos.jpg" alt="">
+                        <!-- Portfolio Item Row -->
+                        <div class="row">
+
+                            <div class="col-md-8">
+                                <img class="img-fluid" src="../../images/requerimientos.jpg" alt="">
+                            </div>
+
+                            <div class="col-md-4">
+                                <h3 class="my-3">Project Description</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
+                                <h3 class="my-3">Project Details</h3>
+                                <ul>
+                                    <li>Lorem Ipsum</li>
+                                    <li>Dolor Sit Amet</li>
+                                    <li>Consectetur</li>
+                                    <li>Adipiscing Elit</li>
+                                </ul>
+                            </div>
+
                         </div>
-                        
-                        <div class="col-md-4">
-                            <h3 class="my-3">Project Description</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
-                            <h3 class="my-3">Project Details</h3>
-                            <ul>
-                                <li>Lorem Ipsum</li>
-                                <li>Dolor Sit Amet</li>
-                                <li>Consectetur</li>
-                                <li>Adipiscing Elit</li>
-                            </ul>
-                        </div>
-
+                        <h3 class="my-4">Alfabetizacion Digital</h3>
                     </div>
-                    <h3 class="my-4">Alfabetizacion Digital</h3>
-
-                    
-
                 </div>
-
-
-
-            </div>
             </div>
         </div>
     </form>

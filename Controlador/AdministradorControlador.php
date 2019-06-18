@@ -199,7 +199,76 @@ switch ($op){
         break;
     }case 2:{//modificar materiales
         
+        
         break;
+    }
+    case 3:{
+        
+     include '../Util/config.inc.php';
+        $db = new Conect_MySql();
+        
+      
+             error_reporting(~E_NOTICE); // avoid notice
+
+            require_once '../../Util/ConexionBD.php';
+
+            if (isset($_POST['btnsave'])) {
+                //$username = $_POST['user_name']; // user name
+                //$userjob = $_POST['user_job']; // user email
+
+                $imgFile = $_FILES['user_image']['name'];
+                $tmp_dir = $_FILES['user_image']['tmp_name'];
+                $imgSize = $_FILES['user_image']['size'];
+
+
+//    if (empty($username)) {
+//        $errMSG = "Ingrese la marca";
+//    } else if (empty($userjob)) {
+//        $errMSG = "Ingrese el tipo.";
+//    } else 
+
+                if (empty($imgFile)) {
+                    $errMSG = "Seleccione el archivo de imagen.";
+                } else {
+                    $upload_dir = '../../imagenes/'; // upload directory
+
+                    $imgExt = strtolower(pathinfo($imgFile, PATHINFO_EXTENSION)); // get image extension
+                    // valid image extensions
+                    $valid_extensions = array('jpeg', 'jpg', 'png', 'gif'); // valid extensions
+                    // rename uploading image
+                    $userpic = rand(1000, 1000000) . "." . $imgExt;
+
+                    // allow valid image file formats
+                    if (in_array($imgExt, $valid_extensions)) {
+                        // Check file size '1MB'
+                        if ($imgSize < 1000000) {
+                            move_uploaded_file($tmp_dir, $upload_dir . $userpic);
+                        } else {
+                            $errMSG = "Su archivo es muy grande.";
+                        }
+                    } else {
+                        $errMSG = "Solo archivos JPG, JPEG, PNG & GIF son permitidos.";
+                    }
+                }
+
+
+                // if no error occured, continue ....
+                if (!isset($errMSG)) {
+                    $stmt = $DB_con->prepare('INSERT INTO usuario(img_perf) VALUES( :upic)');
+                    $stmt->bindParam(':upic', $userpic);
+
+                    if ($stmt->execute()) {
+                        $successMSG = "Nuevo registro insertado correctamente ...";
+                        header("refresh:3;PerfilBeneficiario1.php"); // redirects image view page after 5 seconds.
+                    } else {
+                        $errMSG = "Error al insertar ...";
+                    }
+                }
+            }
+
+
+
+            break;
     }
 }
 ?>

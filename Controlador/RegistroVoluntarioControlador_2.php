@@ -1,6 +1,6 @@
 <?php 
     session_start();
-    echo "<script>alert('".$_POST['txtDni']."')</script>";
+   //echo "<script>alert('".$_POST['txtDni']."')</script>";
     $dniusu=$_POST['dniusu'];
     $cipsi=$_POST['cipsi'];
     if($cipsi=='Si'){
@@ -10,7 +10,6 @@
     }
     $nombres=$_POST['nombres'];
     $apellidos=$_POST['apellidos'];
-    $apellidoMat=$_POST['apellidoMat'];
     $usua= substr(strtolower($nombres),0,1). strtolower(substr($apellidos, 0, stripos($apellidos, " ")));
     $gradoacad=$_POST['gradoacad'];
     $especia=$_POST['especia'];
@@ -181,53 +180,56 @@
     $disponibilidad=$Lunes.$Martes.$Miercoles.$Jueves.$Viernes.$Sabado.$Domingo;
     $aplicarpara=$_POST['aplicarpara'];
     
-//    if (!empty($_POST)) {
-//        if (isset($_POST["EstUsu"]) && isset($_POST["EstPas"])) {
-//            if ($_POST["EstUsu"] != "" && $_POST["EstPas"] != "") {
-//                $usua = $_POST["EstUsu"];
-//                $pass = $_POST["EstPas"];
+   if (!empty($_POST)) {
+        if (isset($_POST["EstUsu"]) && isset($_POST["EstPas"])) {
+           if ($_POST["EstUsu"] != "" && $_POST["EstPas"] != "") {
+                $usua = $_POST["EstUsu"];
+               $pass = $_POST["EstPas"];
                 include_once '../Util/config.inc.php';
-//                $fila = null;
+               $fila = null;
                 $db = new Conect_MySql();
             
             
-                $sql1 = "INSERT INTO usuario(dniusu, usua, pass, perf, apellidos, apellidoMat nombres, provnaci, distnaci, "
+                $sql1 = "INSERT INTO usuario(dniusu, usua, pass, perf, apellidos, nombres, provnaci, distnaci, "
                         . "fecnaci, domiact, distact, email, celu, tele, nomempres, cargempres, dirempres, distempres, "
                         . "telempres, emailempres, participaprevia, objetencasa, enterarcampa, disponibilidad, estado) "
-                        . "VALUES ('".$dniusu."','".$usua."','".'123'."','".$aplicarpara."','".$apellidos."','".$apellidoMat."','".$nombres."','".$provnaci."','".$distnaci
+                        . "VALUES ('".$dniusu."','".$usua."','".'123'."','".$aplicarpara."','".$apellidos."','".$nombres."','".$provnaci."','".$distnaci
                         . "','".$fecnaci."','".$domiact."','".$distact."','".$email."','".$celu."','".$tele."','".$nomempres."','".$cargempres
                         . "','".$dirempres."','".$distempres."','".$telempres."','".$emailempres."','".$participaprevia."','".$objetencasa
-                        . "','".$enterarcampa."','".$disponibilidad."','".'ACTIVO'."')";
+                        . "','".$enterarcampa."','".$disponibilidad."','".'PENDIENTE'."')";
                 $db->execute($sql1);
                 $sql2="INSERT INTO colaborador(dniusu, cip, gradoacad, especia, nomuniver, ciclo,"
                         . " descripdocen, nivelconoci, aplicarpara, privilegiodesubirmat) "
                         . "VALUES ('".$dniusu."','".$cip."','".$gradoacad."','".$especia."','".$nomuniver."','".$ciclo."','".$descripdocen
                         . "','".$nivelconoci."','".$aplicarpara."','No')";
                 $db->execute($sql2);
-                echo "<script>alert('Usuario creado correctamente')</script>";
+                echo "<script>alert('Usuario creado correctamente, debe esperar la aceptacion de sus datos por parte del administrador')</script>";
                 
                 $msg=$nombres.'|'.$aplicarpara;
                 include './MailerControlador.php';
                 
                 print "<script>window.location='../Login.php';</script>";
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $fila = $row;
-                }
-                if ($fila == null) {
-                    print "<script>alert(\"Acceso invalido.\");window.location='../Login.php';</script>";
-                } else {
-                    if (!isset($_SESSION)) {
-                        session_start();
-                    }
-                    $_SESSION['datos'] = $fila;
-                   if ($_SESSION['datos']['perf'] == 'Beneficiario') {
-                        print "<script>window.location='../Vista/Participante/FrmPrincipalPartic.php';</script>";
-                    } else if ($_SESSION['datos']['perf'] == 'Capacitador') {
-                       print "<script>window.location='../Vista/Capacitador/FrmPrincipalCapaci.php';</script>";
-                   } else if ($_SESSION['datos']['perf'] == 'Administrador') {
-                       print "<script>window.location='../Vista/Administrador/FrmPrincipalAdmin.php';</script>";
-                    }
-              }
+             //   while ($row = mysqli_fetch_assoc($result)) {
+             //       $fila = $row;
+              //  }
+              //  if ($fila == null) {
+               //     print "<script>alert(\"Acceso invalido.\");window.location='../Login.php';</script>";
+               // } else {
+                 //   if (!isset($_SESSION)) {
+                 //       session_start();
+                 //   }
+                 //   $_SESSION['datos'] = $fila;
+                 //  if ($_SESSION['datos']['perf'] == 'Beneficiario') {
+                 //       print "<script>window.location='../Vista/Participante/FrmPrincipalPartic.php';</script>";
+                  //  } else if ($_SESSION['datos']['perf'] == 'Capacitador') {
+                  //     print "<script>window.location='../Vista/Capacitador/FrmPrincipalCapaci.php';</script>";
+                  // } else if ($_SESSION['datos']['perf'] == 'Administrador') {
+                  //     print "<script>window.location='../Vista/Administrador/FrmPrincipalAdmin.php';</script>";
+                  //  }
+                //}
+           }
+        }
+   }
            
 ?>
 
